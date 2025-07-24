@@ -39,11 +39,11 @@ Important: Since the output is inserted into the Shadow DOM, external CSS styles
 
 value parameter:
 
-- An array of selected values (for multiple selection mode).
+- An array of previously selected values (for multiple selection mode).
 
-- Any single value for single selection mode.
+- Single previously selected value for single selection mode.
 
-Note: If no values are selected, defaults must be used by external code: an empty array for multimode, or an arbitrary non-existing value for single mode.
+Note: If there are no selected values yet, defaults must be used by external code: an empty array for multimode, or an arbitrary non-existing(in array of options) value for single mode.
 So if you don't define the value argument:  
 - for multiple mode, it will cause an error
 - for single mode, the behavior will depend on whether you use undefined values in the options array (I don't think you need to use them there)
