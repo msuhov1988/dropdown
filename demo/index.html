@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style> 
+            body { margin: 50px;}
+            .between { justify-content: space-between; }
+            .around { justify-content: space-around; }
+            .row {
+                display: flex;
+                align-items: center;                
+                width: 100%;
+                border-bottom: 2px dotted lightgray;
+                padding-top: 10px;
+                padding-bottom: 40px;
+            }
+            .col {
+                display: flex;
+                flex-direction: column;
+                row-gap: 10px;
+            } 
+            .cell {
+                padding: 2px 15px 2px 5px;
+                min-height: 40px;
+                max-height: 200px;
+                width: 200px;
+                border: 0;
+                border-radius: 6px;
+                box-shadow: 0px 0px 6px 0px rgba(34, 60, 80, 0.8);
+                cursor: pointer;
+            }             
+            .word {               
+                font-size: 32px; 
+                color: blue;           
+            } 
+            #word1, #word2, #word3 {
+                display: inline-block;                 
+                min-height: 20px;
+                color: green;
+                min-width: 120px;
+                max-width: 200px;
+                border-bottom: 1px dashed blue;
+                cursor: text;
+                user-select: none;                
+            } 
+            #word1:hover, #word2:hover, #word3:hover {
+                background-color: lightblue;
+            }       
+        </style>
+    </head>
+    <body>
+        <script src="../src/attach_no_module.js"></script>
+        <attach-drop id="attach-for-cell"></attach-drop>
+        <attach-drop id="attach-foreign-template"></attach-drop>
+        <attach-drop id="attach-for-input" data-hidden-input="true"></attach-drop>
+
+        <h2>All elements except the last two examples(input and foreigns) reuse the same component.</h2>
+        <h2>So you can attach a single component to all elements or create separate instances for each element</h2>
+        <div class="row between">            
+            <div class="col">
+                <span>Русский</span>
+                <div class="cell" id="rus"></div>
+            </div>
+            <div class="col">
+                <span>English(highlighted)</span>
+                <div class="cell" id="eng"></div>
+            </div>
+            <div class="col">
+                <span>Множественный/Multiple</span>
+                <div class="cell" id="multiple"></div>
+            </div> 
+            <div class="col">
+                <span>Случайные размеры/Random sizes</span>
+                <div class="cell" id="changing"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3>Make sure that the value propery in each option is unique.</h3>
+                <h3>Otherwise, the component will still function, but will mark all matching options as selected:</h3>                           
+                <div class="cell" id="repeated"></div>
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col">
+                <h3>You can attach it to any HTML element, for example, a span:</h3>
+                <span class="word">
+                    The <span id="word1"></span> is intersection of <span id="word2"></span> and <span id="word3"></span>
+                </span>
+            </div>
+        </div>         
+        <div class="row around">
+            <h3> Let’s take a second one and make custom options for it:</h3>
+            <div class="col">
+                <span>Foreign option template_1</span>
+                <div class="cell" id="foreign1"></div>
+            </div>
+            <div class="col">
+                <span>Foreign option template_2</span>
+                <div class="cell" id="foreign2"></div>
+            </div>
+        </div> 
+        <div class="row around">
+            <h3> Let’s take a third one and bind it to an input below(opens and filters on input event):</h3>
+            <div class="col">              
+                <input class="cell" id="binded-input" style="cursor: text;" placeholder="Enter text"></input>
+            </div>
+        </div>              
+        <script>  
+        
+            // BASE PROPERTIES EXAMPLES -----------------------------------------------------------
+        
+            const [rusData, engData, repeatedData] = [[], [], []];
+            for(let i = 0; i < 100000; i++) {
+                rusData.push({label: `Вариант_${i}`, value: `Вариант_${i}`})
+                engData.push({label: `Option_${i}`, value: `Option_${i}`})
+                repeatedData.push({label: i, value: `choosen value // 10 = ${Math.trunc(i / 10)}`})                
+            }            
+
+            const drop = document.querySelector("#attach-for-cell");
+            const rusDiv = document.querySelector("#rus");
+            const engDiv = document.querySelector("#eng");
+            const changeDiv = document.querySelector("#changing");
+            const singleDiv = document.querySelector("#single");
+            const multiDiv = document.querySelector("#multiple");
+            multiDiv.valueForDrop = [];
+
+            function attach({elem, rus, highlight, multiple}) {
+                function attachInner() {
+                    /* I am forced to override many parameters here because
+                       i'm using the same component multiple times for different elements
+                    */
+                    drop.data = (rus) ? rusData : engData;
+                    drop.placeholder = (rus) ? 'Поиск...' : "Search...";
+                    drop.highlight = (highlight) ? true : false;
+                    drop.heights = [180, 30];
+                    drop.stretch = (multiple) ? 2 : 1;
+                    drop.multiple = multiple;
+                    (drop.isOpen) ? drop.close() : drop.open(elem, elem.valueForDrop)
+                }
+                return attachInner
+            }
+            
+            function attachChanging(elem) { 
+                function attachChanginInner() {
+                    /* I am forced to override many parameters here because
+                       i'm using the same component multiple times for different elements
+                    */               
+                    drop.data = engData;
+                    drop.placeholder = "Search...";
+                    drop.highlight = false;                 
+                    const random = Math.floor(Math.random() * 4) + 1;                    
+                    drop.heights = [30 * random * 5, 30 * random];
+                    drop.stretch = random;
+                    drop.multiple = false;
+                    (drop.isOpen) ? drop.close() : drop.open(elem, elem.valueForDrop);
+                }
+                return attachChanginInner
+            }
+
+            
+            drop.addEventListener('attachSelect', event => {                
+                const {element, multiple, value} = event.detail;
+                if (multiple) {
+                    element.valueForDrop.push(value);
+                    element.textContent = element.valueForDrop.join("; ");
+                } else {
+                    element.valueForDrop = value;
+                    element.textContent = `${value}`; 
+                }                  
+            })
+            drop.addEventListener('attachReset', event => {
+                const {element, multiple, value} = event.detail;
+                if (multiple) {
+                    element.valueForDrop = [];                    
+                } else {
+                    element.valueForDrop = null;                    
+                } 
+                element.textContent = null;                 
+            })
+
+            rusDiv.addEventListener('click', attach({elem: rusDiv, rus: true}));
+            engDiv.addEventListener('click', attach({elem: engDiv, highlight: true}));
+            multiDiv.addEventListener('click', attach({elem: multiDiv, multiple: true}));
+            changeDiv.addEventListener('click', attachChanging(changeDiv));
+
+
+            // REPEATED OPTIONS EXAMPLE -----------------------------------------------------------
+
+            const repeatedDiv = document.querySelector("#repeated");
+
+            repeatedDiv.addEventListener('click', () => {   
+                drop.data = repeatedData;
+                drop.multiple = false; 
+                drop.heights = [180, 30];
+                drop.stretch = 0.8;              
+                (drop.isOpen) ? drop.close() : drop.open(repeatedDiv, repeatedDiv.valueForDrop);    
+            });
+
+            // ATTACH TO SPAN EXAMPLE -------------------------------------------------------------           
+            
+            const word1 = document.querySelector("#word1");
+            const word2 = document.querySelector("#word2");
+            const word3 = document.querySelector("#word3");
+            word1.addEventListener('click', attach({elem: word1}));
+            word2.addEventListener('click', attach({elem: word2}));
+            word3.addEventListener('click', attach({elem: word3}));
+
+
+            // CUSTOM TEMPLATES EXAMPLE -----------------------------------------------------------
+            
+            function ballTemplate(color) {
+                const template = document.createElement('template');
+                template.innerHTML = `
+                    <div style="display: flex; column-gap: 10px; align-items: center;">
+                        <span style="
+                            display: inline-block;
+                            width: 14px;      
+                            height: 14px;
+                            background-color: ${color};
+                            border-radius: 50%; ">
+                        </span>
+                        <span></span>    
+                    </div>
+                `;
+                return template
+            }
+
+            function createBallFragment({label, value}) {
+                const num = Number.parseInt(value.split("_")[1]);
+                const color = (num % 2 === 0) ? 'orange' : (num % 3 === 0) ? 'red' : 'green';
+                const fragment = ballTemplate(color).content.cloneNode(true);
+                const lbl = fragment.firstElementChild.lastElementChild;
+                lbl.textContent = label;
+                return fragment;
+            }
+
+            function imageTemplate(src) {
+                const template = document.createElement('template');
+                template.innerHTML = `
+                    <div style="display: flex; column-gap: 10px; align-items: center;">
+                        <img src=${src} style="width: 24px; height: 24px;"></img>
+                        <span></span>    
+                    </div>
+                `;
+                return template
+            }
+
+            function createImageFragment({label, value}) {
+                const num = Number.parseInt(value.split("_")[1]);
+                let src = null;
+                if (num % 2 === 0) { src = "BatteryMedium.svg"}
+                else if (num % 3 === 0) { src = "BatteryFull.svg" }
+                else { src = "BatteryLow.svg" }                
+                const fragment = imageTemplate(src).content.cloneNode(true);                
+                const lbl = fragment.firstElementChild.lastElementChild;
+                lbl.textContent = label;                
+                return fragment;
+            }
+
+            const dropForeign = document.querySelector("#attach-foreign-template");
+            dropForeign.data = engData; 
+                      
+            
+            dropForeign.addEventListener('attachSelect', event => {
+                const {element, value} = event.detail;               
+                element.valueForDrop = value;
+                element.textContent = `${value}`;                            
+            })
+            dropForeign.addEventListener('attachReset', event => {
+                const {element, value} = event.detail;                
+                element.valueForDrop = null; 
+                element.textContent = null;                 
+            })
+
+            const foreign1 = document.querySelector("#foreign1");
+            const foreign2 = document.querySelector("#foreign2");
+
+            foreign1.addEventListener('click', () => {   
+                dropForeign.templateCreator = createBallFragment;                             
+                (dropForeign.isOpen) ? dropForeign.close() : dropForeign.open(foreign1, foreign1.valueForDrop);    
+            });
+
+            foreign2.addEventListener('click', () => {   
+                dropForeign.templateCreator = createImageFragment;                             
+                (dropForeign.isOpen) ? dropForeign.close() : dropForeign.open(foreign2, foreign2.valueForDrop);    
+            });
+
+
+            // BIND TO INPUT EXAMPLE -----------------------------------------------------------
+
+
+            const inputElem = document.querySelector("#binded-input");            
+            const dropForInput = document.querySelector("#attach-for-input");
+
+            dropForInput.data = engData;
+            dropForInput.heights = [300, 30];
+            dropForInput.addEventListener('attachSelect', event => {
+                const {element, value} = event.detail;               
+                element.value = `${value}`;                             
+            })
+            dropForInput.addEventListener('attachReset', event => {
+                const {element, value} = event.detail;                
+                element.value = null;                 
+            })
+
+            inputElem.addEventListener('input', () => {
+                dropForInput.open(inputElem);
+                // special method for binding to extarnal input
+                dropForInput.externalFiltration(inputElem.value);
+            })
+            inputElem.addEventListener('click', () => {
+                if (dropForInput.isOpen) { dropForInput.close() }
+            })
+
+        </script>
+    </body>
+</html>
