@@ -1,5 +1,5 @@
 ﻿## Dropdown Plug-in
-#### A vanilla JavaScript web component: dropdown list
+#### A pure JavaScript web component: dropdown list
 
 ### Features
 ##### No dependencies
