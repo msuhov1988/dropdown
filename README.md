@@ -44,6 +44,9 @@ value parameter:
 - Any single value for single selection mode.
 
 Note: If no values are selected, defaults must be used by external code: an empty array for multimode, or an arbitrary non-existing value for single mode.
+So if you don't define the value argument:  
+- for multiple mode, it will cause an error
+- for single mode, the behavior will depend on whether you use undefined values in the options array (I don't think you need to use them there)
 
 External code responsibility: Ensuring correctness of values passed.
 ___
