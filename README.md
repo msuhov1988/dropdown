@@ -34,7 +34,7 @@ Function must:
 
 Important: Since the output is inserted into the Shadow DOM, external CSS styles will not affect these templates.
 
-###### Other methods
+###### Display management
 `open(masterElem, value)` - opens (displays) the component attached to html element `masterElem`.
 
 value parameter:
@@ -54,6 +54,8 @@ ___
 `externalFiltration(text)` - used to attach filtering capability to an external input element.
 
 text — any string, but probably current value of the external input.
+___
+Note: Since it is a plug-in component, its opening and closing must be controlled by external code. The component itself closes when you click on the element it is connected to again
 
 ### 2. Events Emitted
 
