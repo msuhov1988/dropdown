@@ -936,7 +936,15 @@ class AttachDrop extends HTMLElement {
             )
         ); 
         this._makeHidden();    
-    }    
+    } 
+    
+    eventResize() {
+        if (!this.isOpen) { return }        
+        const element = this.managerMaster.getMasterElement();
+        const value = this.selection.getValue();
+        this.close();        
+        this.open(element, value);
+    }
 
     registerListeners() {
         this.handlerFilter = this.eventFilter.bind(this);
@@ -945,6 +953,7 @@ class AttachDrop extends HTMLElement {
         this.handlerKeyBoard = this.eventKeyboard.bind(this);
         this.handlerSelect = this.eventSelect.bind(this);
         this.handlerReset = this.eventReset.bind(this);
+        this.handlerResize = this.eventResize.bind(this);
     }
 
     connectedCallback() {
@@ -955,7 +964,8 @@ class AttachDrop extends HTMLElement {
         this.containerContent.addEventListener("mouseover", this.handlerMouseHover);  
         this.containerContent.addEventListener("click", this.handlerSelect);       
         this.addEventListener("keydown", this.handlerKeyBoard);
-        this.containerDelete.addEventListener("click", this.handlerReset);                    
+        this.containerDelete.addEventListener("click", this.handlerReset); 
+        window.addEventListener("resize", this.handlerResize);                   
     }
 
     disconnectedCallback() {
@@ -964,7 +974,8 @@ class AttachDrop extends HTMLElement {
         this.containerContent.removeEventListener("mouseover", this.handlerMouseHover);
         this.containerContent.removeEventListener("click", this.handlerSelect);         
         this.removeEventListener("keydown", this.handlerKeyBoard); 
-        this.containerDelete.removeEventListener("click", this.handlerReset);      
+        this.containerDelete.removeEventListener("click", this.handlerReset);  
+        window.removeEventListener("resize", this.handlerResize);       
     }
 
     externalFiltration(text) {        

@@ -258,7 +258,7 @@ MAIN_TEMPLATE.innerHTML = `
             font-family:      var(--option-font-family, inherit);          
             font-size:        var(--option-font-size, 14px);  
             font-weight:      var(--option-font-weight, normal); 
-            border-radius:    var(--option-border-radius, 4px);                      
+            border-radius:    var(--option-border-radius, 4px);          
         }
         .${CSS_CLASSES.hoveredClass} {
             background-color: var(--option-hover-background, rgba(88, 93, 105, 0.1));
@@ -292,7 +292,7 @@ MAIN_TEMPLATE.innerHTML = `
         .drop {            
             box-sizing: border-box;                 
             position: absolute;            
-            z-index:          var(--drop-z-index, 99);            
+            z-index:          var(--drop-z-index, 99);             
             width: 100%; 
             text-align: left;                         
             background-color: var(--drop-background, white); 
@@ -936,7 +936,15 @@ export default class AttachDrop extends HTMLElement {
             )
         ); 
         this._makeHidden();    
-    }    
+    } 
+    
+    eventResize() {
+        if (!this.isOpen) { return }        
+        const element = this.managerMaster.getMasterElement();
+        const value = this.selection.getValue();
+        this.close();        
+        this.open(element, value);
+    }
 
     registerListeners() {
         this.handlerFilter = this.eventFilter.bind(this);
@@ -945,6 +953,7 @@ export default class AttachDrop extends HTMLElement {
         this.handlerKeyBoard = this.eventKeyboard.bind(this);
         this.handlerSelect = this.eventSelect.bind(this);
         this.handlerReset = this.eventReset.bind(this);
+        this.handlerResize = this.eventResize.bind(this);
     }
 
     connectedCallback() {
@@ -955,7 +964,8 @@ export default class AttachDrop extends HTMLElement {
         this.containerContent.addEventListener("mouseover", this.handlerMouseHover);  
         this.containerContent.addEventListener("click", this.handlerSelect);       
         this.addEventListener("keydown", this.handlerKeyBoard);
-        this.containerDelete.addEventListener("click", this.handlerReset);                    
+        this.containerDelete.addEventListener("click", this.handlerReset); 
+        window.addEventListener("resize", this.handlerResize);                   
     }
 
     disconnectedCallback() {
@@ -964,7 +974,8 @@ export default class AttachDrop extends HTMLElement {
         this.containerContent.removeEventListener("mouseover", this.handlerMouseHover);
         this.containerContent.removeEventListener("click", this.handlerSelect);         
         this.removeEventListener("keydown", this.handlerKeyBoard); 
-        this.containerDelete.removeEventListener("click", this.handlerReset);      
+        this.containerDelete.removeEventListener("click", this.handlerReset);  
+        window.removeEventListener("resize", this.handlerResize);       
     }
 
     externalFiltration(text) {        
