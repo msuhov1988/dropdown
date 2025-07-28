@@ -587,7 +587,8 @@ export default class AttachDrop extends HTMLElement {
         this._highlight = false;
         this._highlightStyle = "1px solid rgb(255, 114, 65)";
         this._hiddenInput = false;
-        this._validation = false;        
+        this._validation = false; 
+        this._showDel = true;        
 
         this.managerOption.createTemplate(this._optionHeight);
         this.managerOption.createTemplateByForeignFunc(this._optionHeight);
@@ -676,6 +677,11 @@ export default class AttachDrop extends HTMLElement {
         this._templateCreator = func;
     }
 
+    get showDel() { return this._showDel }
+    set showDel(value) {
+        this._showDel = (value === "false") ? false : true;        
+    }
+
     _acceptHtmlAttributes() {
         // применение html атрибутов
         this.fastFilter = this.dataset.fastFilter;
@@ -686,6 +692,7 @@ export default class AttachDrop extends HTMLElement {
         this.highlightOutline = this.dataset.highlightOutline; 
         this.multiple = this.dataset.multiple;
         this.hiddenInput = this.dataset.hiddenInput;
+        this.showDel = this.dataset.showDel;
         
         this.inputBlock.hidden = this.hiddenInput;
     }
@@ -702,7 +709,7 @@ export default class AttachDrop extends HTMLElement {
     
     _makeVisible(startIndex) {
         const optionHeight = this._optionHeight;  
-        this.containerDelete.style.display = "flex";               
+        if (this.showDel) { this.containerDelete.style.display = "flex" }                
         this.containerMain.hidden = false;
         this.containerScroll.scrollTop = startIndex * optionHeight;          
         this.input.focus();                

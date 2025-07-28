@@ -113,6 +113,8 @@ Attributes can be set in HTML or via the corresponding methods, but further mana
 
 | `data-hidden-input` | Show/hide internal input (boolean flag) | `(get/set) hiddenInput` | |
 
+| `data-show-del` | show/hide the delete sign when opening (boolean flag) | `(get/set) showDel` | If not defined - default true |
+
 ### 4. CSS Variables for Styling
 Customize appearance via CSS variables:
 
