@@ -106,8 +106,8 @@
                 <input class="cell" id="binded-input" style="cursor: text;" placeholder="Enter text"></input>
             </div>
         </div>              
-        <script>  
-        
+        <script> 
+                               
             // BASE PROPERTIES EXAMPLES -----------------------------------------------------------
         
             const [rusData, engData, repeatedData] = [[], [], []];
@@ -305,9 +305,14 @@
             })
 
             inputElem.addEventListener('input', () => {
-                dropForInput.open(inputElem);
-                // special method for binding to extarnal input
-                dropForInput.externalFiltration(inputElem.value);
+                const val = inputElem.value;
+                if (val) {
+                    dropForInput.open(inputElem);
+                    // special method for binding to extarnal input
+                    dropForInput.externalFiltration(inputElem.value);
+                } else {
+                    dropForInput.close();
+                }
             })
             inputElem.addEventListener('click', () => {
                 if (dropForInput.isOpen) { dropForInput.close() }

@@ -14,6 +14,9 @@
        Выбор опций как мышью, так и клавиатурой (enter)
 */
 
+
+const AttachDrop = (function() {
+
 class AttachDropError extends Error {
     constructor(message) {
         super(message);
@@ -999,3 +1002,7 @@ class AttachDrop extends HTMLElement {
 }
 
 customElements.define("attach-drop", AttachDrop);
+
+return AttachDrop
+
+} ())
