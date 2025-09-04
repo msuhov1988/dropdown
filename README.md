@@ -1,4 +1,4 @@
-﻿## Dropdown Plug-in
+﻿## Pluggable dropdown list
 #### A pure JavaScript web component: dropdown list
 
 ### Features
