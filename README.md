@@ -35,6 +35,8 @@ Function must:
 Important: Since the output is inserted into the Shadow DOM, external CSS styles will not affect these templates.
 
 ###### Display management
+`isOpen` - boolean attribute, true - if component is opened, false - otherwise
+___
 `open(masterElem, value)` - opens (displays) the component attached to html element `masterElem`.
 
 value parameter:
@@ -58,7 +60,7 @@ ___
 
 text — any string, but probably current value of the external input.
 ___
-Note: Since it is a plug-in component, its opening and closing must be controlled by external code. The component itself closes when you click on the element it is connected to again
+Note: Since it is a pluggable component, its opening and closing must be controlled by external code.
 
 ### 2. Events Emitted
 
